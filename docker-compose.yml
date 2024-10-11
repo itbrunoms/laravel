@@ -23,7 +23,7 @@ services:
 
   nginx:
     image: nginx:latest  # Imagem do Nginx a ser utilizada
-    container_name: fenix_nginx  # Nome do contêiner para o serviço Nginx
+    container_name: nginx  # Nome do contêiner para o serviço Nginx
     volumes:
       - ./src:/var/www/html  # Mapeia o diretório atual para o diretório de trabalho no contêiner
       - ./nginx.conf:/etc/nginx/nginx.conf  # Configuração do Nginx
