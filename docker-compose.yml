@@ -1,0 +1,40 @@
+version: '3.8'  # Versão do Docker Compose
+
+services:
+  app:
+    container_name: app  # Nome do contêiner para o serviço de aplicação
+    build:
+      context: .  # Diretório onde o Dockerfile está localizado
+    volumes:
+      - .src/:/var/www/html  # Mapeia o diretório atual para o diretório de trabalho no contêiner
+    networks:
+      - net  # Rede à qual o contêiner será conectado
+    depends_on:
+      - redis  # O serviço 'app' também depende do serviço 'redis' estar disponível
+    entrypoint: /usr/local/bin/init.sh  # Script de inicialização para configurar o ambiente
+
+  redis:
+    image: redis:latest  # Imagem do Redis a ser utilizada
+    container_name: fenix_redis  # Nome do contêiner para o serviço Redis
+    ports:
+      - "6380:6379"  # Mapeia a porta 6379 do contêiner para a porta 6380 do host
+    networks:
+      - net  # Rede à qual o contêiner será conectado
+
+  nginx:
+    image: nginx:latest  # Imagem do Nginx a ser utilizada
+    container_name: fenix_nginx  # Nome do contêiner para o serviço Nginx
+    volumes:
+      - ./src:/var/www/html  # Mapeia o diretório atual para o diretório de trabalho no contêiner
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Configuração do Nginx
+    ports:
+      - "9000:80"  # Mapeia a porta 80 do contêiner para a porta 9000 do host
+    depends_on:
+      - app  # O serviço 'nginx' depende do serviço 'app' estar disponível
+    networks:
+      - net  # Rede à qual o contêiner será conectado
+
+networks:
+  net:
+    name: net  # Nome da rede compartilhada
+    driver: bridge  # Tipo de rede a ser utilizada
